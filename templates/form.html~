@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Forms lol</title>
+  </head>
+  <body>
+
+    <form>
+      <input type="text">
+      <input type="submit">
+    </form>
+    
+  </body>
+  
+</html>
