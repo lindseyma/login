@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, hashlib, csv
+from flask import Flask, render_template, request
+import hashlib, csv
 
 app = Flask(__name__)
 
