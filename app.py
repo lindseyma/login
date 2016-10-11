@@ -1,40 +1,40 @@
 from flask import Flask, render_template, request
-import hashlib, csv
+import hashlib
 
 app = Flask(__name__)
 
 @app.route('/')
 def display():
-    return render_template("home.html")
-
-@app.route('/login/')
-def dispLogin():
     return render_template("form.html")
 
-@app.route('/result/', methods = ["POST"])
+@app.route('/result/', methods=["POST"])
 def auth():
-    ##login
-    if request.form["action"]=="login":
-        username=request.form["user"]
-        password=request.form["pass"]
-        h=hashlib.md5(password)
-        x=open('data/users.csv','r')
-        for line in x:
-            if username == line.split(',')[0]:
-                if h.hexdigest()==line[1]:
-                    return render_template("result.html", returnMsg="woot you're in")
-                return render_template("result.html", returnMsg="it didn't work")
+    ##LOGIN
+    a=open('data/users.csv','r').read().split('\n')
+    if "login" in request.form:
+        password=request.form['pass']
+        x=request.form['user']+','+hashlib.sha256(password).hexdigest()
+        if x in open('data/users.csv', 'r').read():
+            return render_template("result.html", returnMsg="woot you're in!")
+        else:
+            return render_template("result.html", returnMsg="try again")
+    ##REGISTER
     else:
-        username=request.form["user"]
-        password=request.form["pass"]
-        x=open('data/users.csv', 'a')
-        for line in x:
-            if username == line.split(',')[0]:
-                return render_template("result.html", returnMsg="username taken")
-        x.write(username+","+password+"\n")
-        return render_template("result.html", returnMsg="you're in")
-
-if __name__ ==  '__main__':
-    app.debug = True
+        password=request.form['pass']
+        username=request.form['user']
+        u=''
+        i=0
+        for i in range(len(a)):
+            u+=a[i].split(',')[0]
+            print u
+        if request.form['user'] in u:
+            return render_template("result.html", returnMsg="username taken")
+        else:
+            addList=open('data/users.csv', 'a')
+            addList.write(username+','+hashlib.sha256(password).hexdigest())
+            addList.close()
+            return render_template("result.html", returnMsg="success")
+        
+if __name__ == '__main__':
+    app.debug
     app.run()
-    
