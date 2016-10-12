@@ -6,7 +6,7 @@
   <body>
 
     <h1>{{returnMsg}}</h1>
-    <a href="http://127.0.0.1:5000/home/">Home!</a>
+
   </body>
 
 </html>
