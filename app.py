@@ -1,11 +1,24 @@
-from flask import Flask, render_template, request
-import hashlib
+from flask import Flask, render_template, request, session, url_for, redirect
+import hashlib, os
 
 app = Flask(__name__)
+app.secret_key = os.urandom(32)
 
 @app.route('/')
 def display():
-    return render_template("form.html")
+    if len(session.keys())==0:
+        return render_template("form.html")
+    else:
+        return redirect(url_for('home'))
+
+@app.route('/home/')
+def home():
+    return render_template('home.html', user=session['userkey'])
+
+@app.route('/logout/')
+def logout():
+    session.pop('userkey')
+    return render_template('result.html', returnMsg="you logged out!")
 
 @app.route('/result/', methods=["POST"])
 def auth():
@@ -15,6 +28,7 @@ def auth():
         password=request.form['pass']
         x=request.form['user']+','+hashlib.sha256(password).hexdigest()
         if x in open('data/users.csv', 'r').read():
+            session['userkey']=request.form['user']
             return render_template("result.html", returnMsg="woot you're in!")
         else:
             return render_template("result.html", returnMsg="try again")
@@ -36,5 +50,5 @@ def auth():
             return render_template("result.html", returnMsg="success")
         
 if __name__ == '__main__':
-    app.debug
+    app.debug=True
     app.run()
